@@ -3,108 +3,41 @@ from tkinter import *
 from PIL import ImageTk,Image
 from tkinter import messagebox
 
-# Add your own database name and password here to reflect in the code
-mypass = "root"
-mydatabase="db"
-
-# con = pymysql.connect(host="localhost",user="root",password=mypass,database=mydatabase)
-con = sqlite3.connect(mydatabase)
-con.execute("CREATE TABLE IF NOT EXISTS issuebook (book_id varchar(20) primary key,issuedto varchar(20))")
-cur = con.cursor()
-
-# Enter Table Names here
-# issueTable = "books_issued" 
-# bookTable = "books"
-    
-#List To store all Book IDs
 allBid = [] 
 
 def issue():
     bid = inf1.get()
-    issueto = inf2.get()
+    issueto = int(inf2.get())
+    
+    print(type(issueto))
     if bid=="" or issueto=="":
         messagebox.showinfo("Unsuccessful","Book id or issued to is missing")
     else:
+        con = sqlite3.connect("main.db")
+        con.execute("CREATE TABLE IF NOT EXISTS issuebook (book_id varchar(20) primary key,issuedto integer(20))")
+        cur = con.cursor()
         cur.execute("SELECT * FROM bookTable WHERE book_id=?",(bid,))
         bid_detail = cur.fetchone()
         if bid_detail !=None:
             if bid_detail[3] == 'avail':
-                cur.execute("UPDATE bookTable SET status ='issued' WHERE book_id=?",(bid,))
-                con.commit()
-                cur.execute("INSERT INTO issuebook (book_id,issuedto) VALUES(?,?)",(bid,issueto))
-                con.close()
-                messagebox.showinfo("Successful","Book has been issued successfully")
+                cur.execute("SELECT * FROM students WHERE student_id=?",(issueto,))
+                result = cur.fetchone()
+                if result!=None:
+                    cur.execute("UPDATE bookTable SET status ='issued' WHERE book_id=?",(bid,))
+                    con.commit()
+                    cur.execute("INSERT INTO issuebook (book_id,issuedto) VALUES(?,?)",(bid,issueto))
+                    con.commit()
+                    con.close()
+                    messagebox.showinfo("Successful","Book has been issued successfully")
+                else:
+                    messagebox.showinfo("Unregisterd","Not Registerd User")
+                    print("Student is not registerd")
+                
             else:
                 messagebox.showinfo("Unsuccessful","Book already issued")
         else:
             print("Didn't get any data")
-            
 
-
-
-# def issue():
-    
-#     global issueBtn,labelFrame,lb1,inf1,inf2,quitBtn,root,Canvas1,status
-    
-#     bid = inf1.get()
-#     issueto = inf2.get()
-
-#     issueBtn.destroy()
-#     labelFrame.destroy()
-#     lb1.destroy()
-#     inf1.destroy()
-#     inf2.destroy()
-    
-    
-#     # extractBid = "select bid from "+bookTable
-#     try:
-#         cur.execute("SELECT book_id from bookTable")
-#         con.commit()
-#         for i in cur:
-#             allBid.append(i[0])
-        
-#         if bid in allBid:
-#             # checkAvail = "select status from "+bookTable+" where bid = '"+bid+"'"
-#             cur.execute("SELECT status FROM bookTable WHERE book_id=?",(bid,))
-#             con.commit()
-#             for i in cur:
-#                 check = i[0]
-                
-#             if check == 'avail':
-#                 status = True
-#             else:
-#                 status = False
-
-#         else:
-#             messagebox.showinfo("Error","Book ID not present")
-#     except:
-#         messagebox.showinfo("Error","Can't fetch Book IDs")
-    
-#     issueSql = "insert into "+issueTable+" values ('"+bid+"','"+issueto+"')"
-#     show = "select * from "+issueTable
-    
-#     # updateStatus = "update "+bookTable+" set status = 'issued' where bid = '"+bid+"'"
-#     try:
-#         if bid in allBid and status == True:
-#             cur.execute(issueSql)
-#             con.commit()
-#             cur.execute("UPDATE bookTable set status = 'issued' WHERE book_id =?",(bid,))
-#             con.commit()
-#             messagebox.showinfo('Success',"Book Issued Successfully")
-#             root.destroy()
-#         else:
-#             allBid.clear()
-#             messagebox.showinfo('Message',"Book Already Issued")
-#             root.destroy()
-#             return
-#     except:
-#         messagebox.showinfo("Search Error","The value entered is wrong, Try again")
-    
-#     print(bid)
-#     print(issueto)
-    
-#     allBid.clear()
-    
 def issueBook(): 
     
     global issueBtn,labelFrame,lb1,inf1,inf2,quitBtn,root,Canvas1,status

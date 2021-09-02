@@ -2,17 +2,9 @@ from tkinter import *
 from PIL import ImageTk,Image
 from tkinter import messagebox
 import sqlite3
-# Add your own database name and password here to reflect in the code
-mypass = "root"
-mydatabase="db"
 
-# con = pymysql.connect(host="localhost",user="root",password=mypass,database=mydatabase)
-con = sqlite3.connect(mydatabase)
-cur = con.cursor()
 
-# Enter Table Names here
-# issueTable = "books_issued" #Issue Table
-# bookTable = "books" #Book Table
+
 
 
 allBid = [] #List To store all Book IDs
@@ -22,6 +14,8 @@ def returnBtn():
     if bid=="":
         messagebox.showinfo("Unsuccessful","Book id is missing")
     else:
+        con = sqlite3.connect("main.db")
+        cur = con.cursor()
         cur.execute("SELECT * FROM bookTable WHERE book_id=?",(bid,))
         bid_detail = cur.fetchone()
         if bid_detail != None:
@@ -29,6 +23,7 @@ def returnBtn():
                 cur.execute("UPDATE bookTable SET status ='avail' WHERE book_id=?",(bid,))
                 con.commit()
                 cur.execute("DELETE FROM issuebook WHERE book_id=?",(bid,))
+                con.commit()
                 con.close()
                 messagebox.showinfo("Successful","You have successfully returned book")
             else:

@@ -4,12 +4,9 @@ from PIL import ImageTk,Image
 from tkinter import messagebox
 import sqlite3
 
-# Add your own database name and password here to reflect in the code
-mypass = "root"
-mydatabase="db"
 
 # con = pymysql.connect(host="localhost",user="root",password=mypass,database=mydatabase)
-con = sqlite3.connect(mydatabase)
+con = sqlite3.connect("main.db")
 cur = con.cursor()
 
 # Enter Table Names here

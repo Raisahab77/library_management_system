@@ -5,10 +5,8 @@ from tkinter import messagebox
 import sqlite3
 
 
-mypass = "root"
-mydatabase="db"
 
-con = sqlite3.connect(mydatabase)
+con = sqlite3.connect("main.db")
 cur = con.cursor()
 
 
